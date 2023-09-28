@@ -74,47 +74,6 @@ class _HomeState extends State<Home> {
         body: Column(
           children: [
             Autocomplete<String>(
-              optionsViewBuilder: (context, onSelected, options) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 4.0),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Material(
-                      elevation: 4.0,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 200),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: options.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final dynamic option = options.elementAt(index);
-                            return TextButton(
-                              onPressed: () {
-                                onSelected(option);
-                              },
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 15.0),
-                                  child: Text(
-                                    '#$option',
-                                    textAlign: TextAlign.left,
-                                    style: const TextStyle(
-                                      color: Color.fromARGB(255, 74, 137, 92),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
               optionsBuilder: (TextEditingValue textEditingValue) {
                 if (textEditingValue.text == '') {
                   return const Iterable<String>.empty();
@@ -227,7 +186,6 @@ class _HomeState extends State<Home> {
                                 : null,
                           ),
                           onChanged: onChanged,
-                          onSubmitted: onSubmitted,
                         ),
                       );
                     });
