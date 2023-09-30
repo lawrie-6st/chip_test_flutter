@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
-// https://github.com/eyoeldefare/textfield_tags/blob/master/example/lib/main.dart
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.green),
-      home: Home(),
+      home: const Home(),
     );
   }
 }
 
 class Home extends StatefulWidget {
+  const Home({super.key});
+
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   late double _distanceToField;
-  late TextfieldTagsController _controller;
+  final TextfieldTagsController _textfieldTagsController =
+      TextfieldTagsController();
 
   @override
   void didChangeDependencies() {
@@ -36,35 +40,13 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+    _textfieldTagsController.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextfieldTagsController();
-  }
-
-  static const List<String> _pickLanguage = <String>[
-    'c',
-    'c++',
-    'java',
-    'python',
-    'javascript',
-    'php',
-    'sql',
-    'yaml',
-    'gradle',
-    'xml',
-    'html',
-    'flutter',
-    'css',
-    'dockerfile'
-  ];
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "wellcome",
+      title: "Welcome",
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 74, 137, 92),
@@ -73,73 +55,66 @@ class _HomeState extends State<Home> {
         ),
         body: Column(
           children: [
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text == '') {
-                  return const Iterable<String>.empty();
+            TextFieldTags(
+              textfieldTagsController: _textfieldTagsController,
+              initialTags: const [
+                'pick',
+                'your',
+                'favorite',
+                'programming',
+                'language'
+              ],
+              textSeparators: const [' ', ','],
+              letterCase: LetterCase.normal,
+              validator: (String tag) {
+                if (tag == 'php') {
+                  return 'No, please just no';
+                } else if (_textfieldTagsController.getTags!.contains(tag)) {
+                  return 'you already entered that';
                 }
-                return _pickLanguage.where((String option) {
-                  return option.contains(textEditingValue.text.toLowerCase());
-                });
+                return null;
               },
-              onSelected: (String selectedTag) {
-                _controller.addTag = selectedTag;
-              },
-              fieldViewBuilder: (context, ttec, tfn, onFieldSubmitted) {
-                return TextFieldTags(
-                  textEditingController: ttec,
-                  focusNode: tfn,
-                  textfieldTagsController: _controller,
-                  initialTags: const [
-                    'pick',
-                    'your',
-                    'favorite',
-                    'programming',
-                    'language',
-                  ],
-                  textSeparators: const [' ', ','],
-                  letterCase: LetterCase.normal,
-                  validator: (String tag) {
-                    if (tag == 'php') {
-                      return 'No, please just no';
-                    } else if (_controller.getTags!.contains(tag)) {
-                      return 'you already entered that';
-                    }
-                    return null;
-                  },
-                  inputfieldBuilder:
-                      (context, tec, fn, error, onChanged, onSubmitted) {
-                    return ((context, sc, tags, onTagDelete) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: TextField(
-                          controller: tec,
-                          focusNode: fn,
-                          decoration: InputDecoration(
-                            border: const UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Color.fromARGB(255, 74, 137, 92),
-                                  width: 3.0),
-                            ),
-                            focusedBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Color.fromARGB(255, 74, 137, 92),
-                                  width: 3.0),
-                            ),
-                            helperText: 'Enter language...',
-                            helperStyle: const TextStyle(
-                              color: Color.fromARGB(255, 74, 137, 92),
-                            ),
-                            hintText: _controller.hasTags ? '' : "Enter tag...",
-                            errorText: error,
-                            prefixIconConstraints: BoxConstraints(
-                                maxWidth: _distanceToField * 0.74),
-                            prefixIcon: tags.isNotEmpty
-                                ? SingleChildScrollView(
-                                    controller: sc,
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                        children: tags.map((String tag) {
+              inputfieldBuilder: (context, textEditingControllerIFB, focusNode,
+                  errorString, onChanged, onSubmitted) {
+                return ((context, scrollController, tags, onTagDelete) {
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextField(
+                      controller: textEditingControllerIFB,
+                      focusNode: focusNode,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        border: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 74, 137, 92),
+                            width: 3.0,
+                          ),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 74, 137, 92),
+                            width: 3.0,
+                          ),
+                        ),
+                        helperText: 'Enter language...',
+                        helperStyle: const TextStyle(
+                          color: Color.fromARGB(255, 74, 137, 92),
+                        ),
+                        hintText: _textfieldTagsController.hasTags
+                            ? ''
+                            : "Enter tag...",
+                        errorText: errorString,
+                        prefixIconConstraints:
+                            BoxConstraints(maxWidth: _distanceToField * 0.74),
+                        prefixIcon: tags.isNotEmpty
+                            ? SingleChildScrollView(
+                                controller: scrollController,
+                                scrollDirection: Axis.vertical,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Wrap(
+                                    runSpacing: 7.0,
+                                    children: tags.map((String tag) {
                                       return Container(
                                         decoration: const BoxDecoration(
                                           borderRadius: BorderRadius.all(
@@ -148,13 +123,14 @@ class _HomeState extends State<Home> {
                                           color:
                                               Color.fromARGB(255, 74, 137, 92),
                                         ),
-                                        margin:
-                                            const EdgeInsets.only(right: 10.0),
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 5.0),
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0, vertical: 4.0),
+                                            horizontal: 10.0, vertical: 5.0),
                                         child: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                              MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
                                             InkWell(
                                               child: Text(
@@ -182,15 +158,14 @@ class _HomeState extends State<Home> {
                                         ),
                                       );
                                     }).toList()),
-                                  )
-                                : null,
-                          ),
-                          onChanged: onChanged,
-                        ),
-                      );
-                    });
-                  },
-                );
+                              )
+                            : null,
+                      ),
+                      onChanged: onChanged,
+                      onSubmitted: onSubmitted,
+                    ),
+                  );
+                });
               },
             ),
             ElevatedButton(
@@ -200,7 +175,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               onPressed: () {
-                _controller.clearTags();
+                _textfieldTagsController.clearTags();
               },
               child: const Text('CLEAR TAGS'),
             ),
